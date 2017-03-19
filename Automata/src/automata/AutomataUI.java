@@ -74,10 +74,10 @@ public class AutomataUI extends javax.swing.JFrame {
         botonCargarArchivo = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         botonIdentificarYConvertir = new javax.swing.JButton();
-        botonSimplificar = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         textPrueba = new javax.swing.JTextField();
         botonProbar = new javax.swing.JButton();
+        botonAñadirTransicion = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -86,6 +86,11 @@ public class AutomataUI extends javax.swing.JFrame {
 
         jPanel1.setLayout(null);
 
+        tablaAutomata = new javax.swing.JTable(){
+            public boolean isCellEditable(int rowIndex, int colIndex) {
+                return false; //Disallow the editing of any cell
+            }
+        };
         tablaAutomata.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -102,6 +107,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 return types [columnIndex];
             }
         });
+        tablaAutomata.setCellSelectionEnabled(true);
         jScrollPane1.setViewportView(tablaAutomata);
         if (tablaAutomata.getColumnModel().getColumnCount() > 0) {
             tablaAutomata.getColumnModel().getColumn(0).setMinWidth(60);
@@ -140,7 +146,7 @@ public class AutomataUI extends javax.swing.JFrame {
 
         jLabel1.setText("Tabla de Autómata");
         jPanel1.add(jLabel1);
-        jLabel1.setBounds(130, 230, 100, 17);
+        jLabel1.setBounds(100, 230, 200, 17);
 
         botonIdentificarYConvertir.setText("Identificacion y conversion");
         botonIdentificarYConvertir.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -154,11 +160,7 @@ public class AutomataUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(botonIdentificarYConvertir);
-        botonIdentificarYConvertir.setBounds(390, 180, 180, 30);
-
-        botonSimplificar.setText("Simplificar");
-        jPanel1.add(botonSimplificar);
-        botonSimplificar.setBounds(390, 240, 180, 30);
+        botonIdentificarYConvertir.setBounds(390, 270, 180, 30);
 
         jLabel2.setText("Hilera:");
         jPanel1.add(jLabel2);
@@ -176,6 +178,16 @@ public class AutomataUI extends javax.swing.JFrame {
         jPanel1.add(botonProbar);
         botonProbar.setBounds(500, 330, 59, 29);
 
+        botonAñadirTransicion.setText("Añadir transicion");
+        botonAñadirTransicion.setToolTipText("");
+        botonAñadirTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonAñadirTransicionActionPerformed(evt);
+            }
+        });
+        jPanel1.add(botonAñadirTransicion);
+        botonAñadirTransicion.setBounds(390, 180, 180, 29);
+
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
 
@@ -192,7 +204,7 @@ public class AutomataUI extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 563, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -220,9 +232,17 @@ public class AutomataUI extends javax.swing.JFrame {
         llenarAutomata();
     }//GEN-LAST:event_botonIdentificarYConvertirMouseClicked
 
+    private void botonAñadirTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAñadirTransicionActionPerformed
+        añadirTransicion();
+    }//GEN-LAST:event_botonAñadirTransicionActionPerformed
+
     /**
      * @param args the command line arguments
      */
+    public void añadirTransicion(){
+        Transiciones transicionesUI = new Transiciones(columns,rows);
+        transicionesUI.setVisible(true);
+    }
     public void llenarAutomata(){
         automata = new String[this.tablaAutomata.getRowCount()][this.tablaAutomata.getColumnCount()];
         for(int fila = 0; fila<this.tablaAutomata.getRowCount(); fila++){
@@ -238,6 +258,7 @@ public class AutomataUI extends javax.swing.JFrame {
         this.tablaAutomata.addColumn(new TableColumn(len));
         TableColumn newCol = this.tablaAutomata.getColumnModel().getColumn(len);
         newCol.setHeaderValue(this.textEstado.getText());
+        this.textEstado.setText("");
     }
     public void addEstado(){
         int len = this.tablaAutomata.getColumnCount();
@@ -260,6 +281,10 @@ public class AutomataUI extends javax.swing.JFrame {
         model.addRow(rowsTemp);  
         for (int k = 0; k<rowCount; k++){
                 this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
+        }
+        this.textSimbolo.setText("");
+        for (int i = 0 ; i < this.tablaAutomata.getRowCount(); i++){
+            System.out.print(rowsTemp[i]);
         }
         setRows(rowsTemp);
         setData(dataTemp);
@@ -300,10 +325,10 @@ public class AutomataUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton botonAddEstado;
     private javax.swing.JButton botonAddSimbolo;
+    private javax.swing.JButton botonAñadirTransicion;
     private javax.swing.JButton botonCargarArchivo;
     private javax.swing.JButton botonIdentificarYConvertir;
     private javax.swing.JButton botonProbar;
-    private javax.swing.JButton botonSimplificar;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
