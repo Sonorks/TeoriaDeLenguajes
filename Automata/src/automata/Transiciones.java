@@ -5,6 +5,8 @@
  */
 package automata;
 
+import javax.swing.JFrame;
+
 /**
  *
  * @author sonorks
@@ -12,18 +14,22 @@ package automata;
 public class Transiciones extends javax.swing.JFrame {
     public String[] columns= null;
     public String[] rows = null;
+    public String prueba= "-";
     /**
      * Creates new form Transiciones
      */
+    public void addTransicion(){
+        this.prueba+="+";
+    }
     public Transiciones() {
         initComponents();
     }
     public Transiciones(String[] columnas, String[] filas){
         this.columns = columnas;
         this.rows = filas;
+        
         initComponents();
     }
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -51,6 +57,11 @@ public class Transiciones extends javax.swing.JFrame {
         jLabel3.setText("Estado nuevo");
 
         añadirTransicion.setText("AñadirTransicion");
+        añadirTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                añadirTransicionActionPerformed(evt);
+            }
+        });
 
         simboloTransicion.setModel(new javax.swing.DefaultComboBoxModel<>(columns));
         simboloTransicion.addActionListener(new java.awt.event.ActionListener() {
@@ -118,6 +129,10 @@ public class Transiciones extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_simboloTransicionActionPerformed
 
+    private void añadirTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_añadirTransicionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_añadirTransicionActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -154,13 +169,13 @@ public class Transiciones extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton añadirTransicion;
-    private javax.swing.JComboBox<String> estadoDestinoTransicion;
-    private javax.swing.JComboBox<String> estadoOrigenTransicion;
+    public javax.swing.JButton añadirTransicion;
+    public javax.swing.JComboBox<String> estadoDestinoTransicion;
+    public javax.swing.JComboBox<String> estadoOrigenTransicion;
     private javax.swing.JButton finalizarTransicion;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JComboBox<String> simboloTransicion;
+    public javax.swing.JComboBox<String> simboloTransicion;
     // End of variables declaration//GEN-END:variables
 }

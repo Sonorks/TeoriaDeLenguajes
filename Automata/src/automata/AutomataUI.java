@@ -23,6 +23,9 @@ public class AutomataUI extends javax.swing.JFrame {
     public String[] data = null;
     public String[][] automata= null;
 
+    public void prueba(){
+        this.textEstado.setText("estado enviado del otro lado");
+    }
     public String[] getColumns() {
         return columns;
     }
@@ -240,55 +243,97 @@ public class AutomataUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public void añadirTransicion(){
-        Transiciones transicionesUI = new Transiciones(columns,rows);
+        Transiciones transicionesUI = new Transiciones(columns,data);
         transicionesUI.setVisible(true);
+        transicionesUI.añadirTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+               añadirTransicionATabla(transicionesUI.simboloTransicion.getSelectedItem().toString(),transicionesUI.estadoOrigenTransicion.getSelectedItem().toString(),transicionesUI.estadoDestinoTransicion.getSelectedItem().toString());
+            }
+        });   
+    }
+    public void añadirTransicionATabla(String simbolo, String estadoOrigen, String estadoDestino){
+        int col = buscarPosicion(this.columns,simbolo );
+        int filOrigen = buscarPosicion(this.data,estadoOrigen);
+        //System.out.println("Se añadira el simbolo: "+estadoDestino+ " en "+col+", "+filDestino);
+        this.tablaAutomata.getModel().setValueAt(estadoDestino, filOrigen, col);
+    }
+    public int buscarPosicion(String[] array, String word){
+        for(int i = 0 ; i < array.length; i++){
+            if(array[i].equalsIgnoreCase(word)){
+                System.out.print(i);
+                return i;
+            }
+        }
+        return -1;
     }
     public void llenarAutomata(){
         automata = new String[this.tablaAutomata.getRowCount()][this.tablaAutomata.getColumnCount()];
         for(int fila = 0; fila<this.tablaAutomata.getRowCount(); fila++){
             for (int columna= 0; columna<this.tablaAutomata.getColumnCount(); columna++){
+                    try{
                     automata[fila][columna]=this.tablaAutomata.getModel().getValueAt(fila, columna).toString();
-                    System.out.print(automata[fila][columna]);
+                    }catch (NullPointerException e){
+                        automata[fila][columna] = " ";
+                    }finally{
+                        System.out.print(automata[fila][columna]);
+                    }
             }
             System.out.println(" ");
         }
     }
     public void addSimbolo(){
-        int len = this.tablaAutomata.getColumnCount();
-        this.tablaAutomata.addColumn(new TableColumn(len));
-        TableColumn newCol = this.tablaAutomata.getColumnModel().getColumn(len);
-        newCol.setHeaderValue(this.textEstado.getText());
-        this.textEstado.setText("");
+        if(!this.textEstado.getText().isEmpty()){
+            int len = this.tablaAutomata.getColumnCount();
+            String[] columnsTemp = new String[len];
+            for (int i = 0; i<len; i++){
+                columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
+            }
+            if(buscarPosicion(columnsTemp,this.textEstado.getText().toString())== -1){
+                //int len = this.tablaAutomata.getColumnCount();
+                this.tablaAutomata.addColumn(new TableColumn(len));
+                TableColumn newCol = this.tablaAutomata.getColumnModel().getColumn(len);
+                newCol.setHeaderValue(this.textEstado.getText());
+                this.textEstado.setText("");
+            }
+        }
     }
     public void addEstado(){
-        int len = this.tablaAutomata.getColumnCount();
-        int rowCount = this.tablaAutomata.getRowCount();
-        String[] columnsTemp= new String[len];
-        String[] rowsTemp = new String[len];
-        String[] dataTemp = new String[rowCount];
-        for (int i = 0; i<len; i++){
-            columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
+        if(!this.textSimbolo.getText().isEmpty()){
+            int len = this.tablaAutomata.getColumnCount();
+            int rowCount = this.tablaAutomata.getRowCount();
+            String[] columnsTemp= new String[len];
+            String[] rowsTemp = new String[len];
+            String[] dataTemp = new String[rowCount+1];
+            for (int i = 0; i<len; i++){
+                columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
+            }
+            for (int j = 0; j<rowCount; j++){
+                dataTemp[j]=this.tablaAutomata.getModel().getValueAt(j,0).toString();
+                System.out.print(dataTemp[j]);
+            }
+            dataTemp[rowCount]= "-1";
+            System.out.print(dataTemp[rowCount]);
+            if (buscarPosicion(dataTemp,this.textSimbolo.getText()) == -1){
+                dataTemp[rowCount]= this.textSimbolo.getText();
+                JTable table;
+                table = new JTable(new DefaultTableModel(columnsTemp,rowCount));
+                rowsTemp[0]= this.textSimbolo.getText();
+                DefaultTableModel model = (DefaultTableModel) table.getModel();
+                model.setColumnIdentifiers(columnsTemp);
+                this.tablaAutomata.setModel(model);
+                model.addRow(rowsTemp);  
+                for (int k = 0; k<rowCount; k++){
+                        this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
+                }
+                this.textSimbolo.setText("");
+                for (int i = 0 ; i < dataTemp.length; i++){
+                    System.out.print(dataTemp[i]);
+                }
+                setRows(rowsTemp);
+                setData(dataTemp);
+                setColumns(columnsTemp);
+            }
         }
-        for (int j = 0; j<rowCount; j++){
-            dataTemp[j]=this.tablaAutomata.getModel().getValueAt(j,0).toString();
-        }
-        JTable table;
-        table = new JTable(new DefaultTableModel(columnsTemp,rowCount));
-        rowsTemp[0]= this.textSimbolo.getText();
-        DefaultTableModel model = (DefaultTableModel) table.getModel();
-        model.setColumnIdentifiers(columnsTemp);
-        this.tablaAutomata.setModel(model);
-        model.addRow(rowsTemp);  
-        for (int k = 0; k<rowCount; k++){
-                this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
-        }
-        this.textSimbolo.setText("");
-        for (int i = 0 ; i < this.tablaAutomata.getRowCount(); i++){
-            System.out.print(rowsTemp[i]);
-        }
-        setRows(rowsTemp);
-        setData(dataTemp);
-        setColumns(columnsTemp);
     }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

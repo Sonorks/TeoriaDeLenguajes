@@ -96,8 +96,16 @@
     </Component>
     <Component class="javax.swing.JButton" name="a&#xf1;adirTransicion">
       <Properties>
-        <Property name="text" type="java.lang.String" value="A&#xf1;adirTransicion"/>
+        <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
+          <Connection code="&quot;A&#xf1;adirTransicion&quot;" type="code"/>
+        </Property>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="a&#xf1;adirTransicionActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
     </Component>
     <Component class="javax.swing.JComboBox" name="simboloTransicion">
       <Properties>
@@ -110,6 +118,7 @@
       </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JComboBox" name="estadoOrigenTransicion">
@@ -120,6 +129,7 @@
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JComboBox" name="estadoDestinoTransicion">
@@ -130,6 +140,7 @@
       </Properties>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;String&gt;"/>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
       </AuxValues>
     </Component>
     <Component class="javax.swing.JButton" name="finalizarTransicion">
