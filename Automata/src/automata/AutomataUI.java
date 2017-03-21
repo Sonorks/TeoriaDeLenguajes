@@ -24,7 +24,7 @@ public class AutomataUI extends javax.swing.JFrame {
     public String[][] automata= null; // donde se guarda la tabla en general
 
     public void prueba(){
-        this.textEstado.setText("estado enviado del otro lado");
+        this.textSimbolo.setText("estado enviado del otro lado");
     }
     public String[] getColumns() {
         return columns;
@@ -70,10 +70,10 @@ public class AutomataUI extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaAutomata = new javax.swing.JTable();
-        botonAddEstado = new javax.swing.JButton();
-        textEstado = new javax.swing.JTextField();
-        textSimbolo = new javax.swing.JTextField();
         botonAddSimbolo = new javax.swing.JButton();
+        textSimbolo = new javax.swing.JTextField();
+        textEstado = new javax.swing.JTextField();
+        botonAddEstado = new javax.swing.JButton();
         botonCargarArchivo = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         botonIdentificarYConvertir = new javax.swing.JButton();
@@ -121,27 +121,27 @@ public class AutomataUI extends javax.swing.JFrame {
         jPanel1.add(jScrollPane1);
         jScrollPane1.setBounds(20, 20, 320, 200);
 
-        botonAddEstado.setText("Añadir estado");
-        botonAddEstado.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                botonAddEstadoActionPerformed(evt);
-            }
-        });
-        jPanel1.add(botonAddEstado);
-        botonAddEstado.setBounds(390, 30, 120, 30);
-        jPanel1.add(textEstado);
-        textEstado.setBounds(520, 30, 50, 30);
-        jPanel1.add(textSimbolo);
-        textSimbolo.setBounds(520, 80, 50, 30);
-
-        botonAddSimbolo.setText("Añadir simbolo");
+        botonAddSimbolo.setText("Añadir Simbolo");
         botonAddSimbolo.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 botonAddSimboloActionPerformed(evt);
             }
         });
         jPanel1.add(botonAddSimbolo);
-        botonAddSimbolo.setBounds(390, 80, 120, 30);
+        botonAddSimbolo.setBounds(390, 30, 120, 30);
+        jPanel1.add(textSimbolo);
+        textSimbolo.setBounds(520, 30, 50, 30);
+        jPanel1.add(textEstado);
+        textEstado.setBounds(520, 80, 50, 30);
+
+        botonAddEstado.setText("Añadir Estado");
+        botonAddEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonAddEstadoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(botonAddEstado);
+        botonAddEstado.setBounds(390, 80, 120, 30);
 
         botonCargarArchivo.setText("Cargar desde archivo");
         jPanel1.add(botonCargarArchivo);
@@ -223,13 +223,13 @@ public class AutomataUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_textPruebaActionPerformed
 
-    private void botonAddEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAddEstadoActionPerformed
-        addSimbolo();
-    }//GEN-LAST:event_botonAddEstadoActionPerformed
-
     private void botonAddSimboloActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAddSimboloActionPerformed
-        addEstado();
+        addSimbolo();
     }//GEN-LAST:event_botonAddSimboloActionPerformed
+
+    private void botonAddEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAddEstadoActionPerformed
+        addEstado();
+    }//GEN-LAST:event_botonAddEstadoActionPerformed
 
     private void botonIdentificarYConvertirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonIdentificarYConvertirMouseClicked
         llenarAutomata();
@@ -243,7 +243,12 @@ public class AutomataUI extends javax.swing.JFrame {
      * @param args the command line arguments
      */
     public void añadirTransicion(){ //Metodo para mostrar la tabla de transiciones
-        Transiciones transicionesUI = new Transiciones(columns,data); // se crea el JFrame de transiciones
+        //se guardara las cabeceras de las columnas empezando desde la segunda
+        String[] simbolos = new String[columns.length - 1];
+        for(int i = 0; i< simbolos.length; i++){
+            simbolos[i] = columns[i+1];
+        }
+        Transiciones transicionesUI = new Transiciones(simbolos,data); // se crea el JFrame de transiciones
         transicionesUI.setVisible(true); //se muestra el JFrame de transiciones
         transicionesUI.añadirTransicion.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) { //controlar click en el boton
@@ -286,24 +291,24 @@ public class AutomataUI extends javax.swing.JFrame {
     }
     //añadir simbolos a la tabla
     public void addSimbolo(){
-        if(!this.textEstado.getText().isEmpty()){ //que no se agreguen espacios nulos
+        if(!this.textSimbolo.getText().isEmpty()){ //que no se agreguen espacios nulos
             int len = this.tablaAutomata.getColumnCount(); //cantidad de columnas actuales
             String[] columnsTemp = new String[len]; // arreglo para guardar las cabeceras de las columnas
             for (int i = 0; i<len; i++){
                 //se guardan las cabeceras actuales
                 columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
             }
-            if(buscarPosicion(columnsTemp,this.textEstado.getText().toString())== -1){//valida que no se meta un simbolo que ya existe
+            if(buscarPosicion(columnsTemp,this.textSimbolo.getText().toString())== -1){//valida que no se meta un simbolo que ya existe
                 //int len = this.tablaAutomata.getColumnCount();
                 this.tablaAutomata.addColumn(new TableColumn(len));//agrega la columna
                 TableColumn newCol = this.tablaAutomata.getColumnModel().getColumn(len);
-                newCol.setHeaderValue(this.textEstado.getText());// se copia el modelo de las columnas 
-                this.textEstado.setText(""); // se limpia el campo donde se ingreso
+                newCol.setHeaderValue(this.textSimbolo.getText());// se copia el modelo de las columnas 
+                this.textSimbolo.setText(""); // se limpia el campo donde se ingreso
             }
         }
     }
     public void addEstado(){
-        if(!this.textSimbolo.getText().isEmpty()){ //para que no ingrese campos vacios / nulos
+        if(!this.textEstado.getText().isEmpty()){ //para que no ingrese campos vacios / nulos
             int len = this.tablaAutomata.getColumnCount(); //numero de columnas
             int rowCount = this.tablaAutomata.getRowCount(); //numero de filas
             String[] columnsTemp= new String[len]; //arreglos para almacenar datos antes de agregar nuevos
@@ -316,11 +321,11 @@ public class AutomataUI extends javax.swing.JFrame {
                 dataTemp[j]=this.tablaAutomata.getModel().getValueAt(j,0).toString();
             }
             dataTemp[rowCount]= "-1";
-            if (buscarPosicion(dataTemp,this.textSimbolo.getText()) == -1){ // que no se repitan estados
-                dataTemp[rowCount]= this.textSimbolo.getText(); 
+            if (buscarPosicion(dataTemp,this.textEstado.getText()) == -1){ // que no se repitan estados
+                dataTemp[rowCount]= this.textEstado.getText(); 
                 JTable table; //se modifica la primera columna de la tabla para agregar estado
                 table = new JTable(new DefaultTableModel(columnsTemp,rowCount));
-                rowsTemp[0]= this.textSimbolo.getText();
+                rowsTemp[0]= this.textEstado.getText();
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
                 model.setColumnIdentifiers(columnsTemp);
                 this.tablaAutomata.setModel(model);
@@ -328,7 +333,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 for (int k = 0; k<rowCount; k++){
                         this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
                 }
-                this.textSimbolo.setText("");
+                this.textEstado.setText("");
                 setRows(rowsTemp);// se guardan los valores
                 setData(dataTemp);// se guardan los valores
                 setColumns(columnsTemp); // se guardan los valores
