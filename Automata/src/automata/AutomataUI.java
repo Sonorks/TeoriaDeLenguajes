@@ -18,10 +18,10 @@ import javax.swing.table.TableColumn;
  * @author CASA
  */
 public class AutomataUI extends javax.swing.JFrame {
-    public String[] columns= null;
-    public String[] rows = null;
-    public String[] data = null;
-    public String[][] automata= null;
+    public String[] columns= null; //las columnas de la tabla = los simbolos
+    public String[] rows = null; //se usa para actualizar las filas cada que se agrega un estado
+    public String[] data = null; //donde se guardan los estados
+    public String[][] automata= null; // donde se guarda la tabla en general
 
     public void prueba(){
         this.textEstado.setText("estado enviado del otro lado");
@@ -242,21 +242,23 @@ public class AutomataUI extends javax.swing.JFrame {
     /**
      * @param args the command line arguments
      */
-    public void añadirTransicion(){
-        Transiciones transicionesUI = new Transiciones(columns,data);
-        transicionesUI.setVisible(true);
+    public void añadirTransicion(){ //Metodo para mostrar la tabla de transiciones
+        Transiciones transicionesUI = new Transiciones(columns,data); // se crea el JFrame de transiciones
+        transicionesUI.setVisible(true); //se muestra el JFrame de transiciones
         transicionesUI.añadirTransicion.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { //controlar click en el boton
                añadirTransicionATabla(transicionesUI.simboloTransicion.getSelectedItem().toString(),transicionesUI.estadoOrigenTransicion.getSelectedItem().toString(),transicionesUI.estadoDestinoTransicion.getSelectedItem().toString());
             }
         });   
     }
+    //metodo para añadir la transicion a la JTable
     public void añadirTransicionATabla(String simbolo, String estadoOrigen, String estadoDestino){
         int col = buscarPosicion(this.columns,simbolo );
         int filOrigen = buscarPosicion(this.data,estadoOrigen);
         //System.out.println("Se añadira el simbolo: "+estadoDestino+ " en "+col+", "+filDestino);
         this.tablaAutomata.getModel().setValueAt(estadoDestino, filOrigen, col);
     }
+    //Metodo para encontrar la posicion en la tabla de un estado o simbolo especifico
     public int buscarPosicion(String[] array, String word){
         for(int i = 0 ; i < array.length; i++){
             if(array[i].equalsIgnoreCase(word)){
@@ -266,13 +268,14 @@ public class AutomataUI extends javax.swing.JFrame {
         }
         return -1;
     }
+    //Metodo para guardar los datos de la tabla en el arreglo automata
     public void llenarAutomata(){
-        automata = new String[this.tablaAutomata.getRowCount()][this.tablaAutomata.getColumnCount()];
-        for(int fila = 0; fila<this.tablaAutomata.getRowCount(); fila++){
-            for (int columna= 0; columna<this.tablaAutomata.getColumnCount(); columna++){
-                    try{
+        automata = new String[this.tablaAutomata.getRowCount()][this.tablaAutomata.getColumnCount()];//crea el arreglo con las dimensiones
+        for(int fila = 0; fila<this.tablaAutomata.getRowCount(); fila++){ //recorrer las filas
+            for (int columna= 0; columna<this.tablaAutomata.getColumnCount(); columna++){//recorrer las columnas
+                    try{ //manejo de excepciones en caso de que haya una transicion vacía
                     automata[fila][columna]=this.tablaAutomata.getModel().getValueAt(fila, columna).toString();
-                    }catch (NullPointerException e){
+                    }catch (NullPointerException e){ //si está vacía deja un espacio en automata[][]
                         automata[fila][columna] = " ";
                     }finally{
                         System.out.print(automata[fila][columna]);
@@ -281,41 +284,41 @@ public class AutomataUI extends javax.swing.JFrame {
             System.out.println(" ");
         }
     }
+    //añadir simbolos a la tabla
     public void addSimbolo(){
-        if(!this.textEstado.getText().isEmpty()){
-            int len = this.tablaAutomata.getColumnCount();
-            String[] columnsTemp = new String[len];
+        if(!this.textEstado.getText().isEmpty()){ //que no se agreguen espacios nulos
+            int len = this.tablaAutomata.getColumnCount(); //cantidad de columnas actuales
+            String[] columnsTemp = new String[len]; // arreglo para guardar las cabeceras de las columnas
             for (int i = 0; i<len; i++){
+                //se guardan las cabeceras actuales
                 columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
             }
-            if(buscarPosicion(columnsTemp,this.textEstado.getText().toString())== -1){
+            if(buscarPosicion(columnsTemp,this.textEstado.getText().toString())== -1){//valida que no se meta un simbolo que ya existe
                 //int len = this.tablaAutomata.getColumnCount();
-                this.tablaAutomata.addColumn(new TableColumn(len));
+                this.tablaAutomata.addColumn(new TableColumn(len));//agrega la columna
                 TableColumn newCol = this.tablaAutomata.getColumnModel().getColumn(len);
-                newCol.setHeaderValue(this.textEstado.getText());
-                this.textEstado.setText("");
+                newCol.setHeaderValue(this.textEstado.getText());// se copia el modelo de las columnas 
+                this.textEstado.setText(""); // se limpia el campo donde se ingreso
             }
         }
     }
     public void addEstado(){
-        if(!this.textSimbolo.getText().isEmpty()){
-            int len = this.tablaAutomata.getColumnCount();
-            int rowCount = this.tablaAutomata.getRowCount();
-            String[] columnsTemp= new String[len];
+        if(!this.textSimbolo.getText().isEmpty()){ //para que no ingrese campos vacios / nulos
+            int len = this.tablaAutomata.getColumnCount(); //numero de columnas
+            int rowCount = this.tablaAutomata.getRowCount(); //numero de filas
+            String[] columnsTemp= new String[len]; //arreglos para almacenar datos antes de agregar nuevos
             String[] rowsTemp = new String[len];
             String[] dataTemp = new String[rowCount+1];
-            for (int i = 0; i<len; i++){
+            for (int i = 0; i<len; i++){ // guardando las cabeceras de las columnas (simbolos)
                 columnsTemp[i] = this.tablaAutomata.getColumnModel().getColumn(i).getHeaderValue().toString();
             }
-            for (int j = 0; j<rowCount; j++){
+            for (int j = 0; j<rowCount; j++){//guardando las cabeceras de las filas (estados)
                 dataTemp[j]=this.tablaAutomata.getModel().getValueAt(j,0).toString();
-                System.out.print(dataTemp[j]);
             }
             dataTemp[rowCount]= "-1";
-            System.out.print(dataTemp[rowCount]);
-            if (buscarPosicion(dataTemp,this.textSimbolo.getText()) == -1){
-                dataTemp[rowCount]= this.textSimbolo.getText();
-                JTable table;
+            if (buscarPosicion(dataTemp,this.textSimbolo.getText()) == -1){ // que no se repitan estados
+                dataTemp[rowCount]= this.textSimbolo.getText(); 
+                JTable table; //se modifica la primera columna de la tabla para agregar estado
                 table = new JTable(new DefaultTableModel(columnsTemp,rowCount));
                 rowsTemp[0]= this.textSimbolo.getText();
                 DefaultTableModel model = (DefaultTableModel) table.getModel();
@@ -326,12 +329,9 @@ public class AutomataUI extends javax.swing.JFrame {
                         this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
                 }
                 this.textSimbolo.setText("");
-                for (int i = 0 ; i < dataTemp.length; i++){
-                    System.out.print(dataTemp[i]);
-                }
-                setRows(rowsTemp);
-                setData(dataTemp);
-                setColumns(columnsTemp);
+                setRows(rowsTemp);// se guardan los valores
+                setData(dataTemp);// se guardan los valores
+                setColumns(columnsTemp); // se guardan los valores
             }
         }
     }
