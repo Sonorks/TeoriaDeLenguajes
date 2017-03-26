@@ -1,6 +1,8 @@
 package automata;
 
 import java.awt.Point;
+import java.util.Queue;
+import java.util.Stack;
 import java.util.Vector;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -245,7 +247,8 @@ public class AutomataUI extends javax.swing.JFrame {
     }//GEN-LAST:event_botonAñadirTransicionActionPerformed
 
     private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
-        estadosEquivalentes();
+            estadosEquivalentes();
+        estadosMuertos();
     }//GEN-LAST:event_botonProbarActionPerformed
 
     /**
@@ -289,7 +292,7 @@ public class AutomataUI extends javax.swing.JFrame {
     public int buscarPosicion(String[] array, String word){
         for(int i = 0 ; i < array.length; i++){
             if(array[i].equalsIgnoreCase(word)){
-                System.out.print(i);
+                //System.out.print(i);
                 return i;
             }
         }
@@ -400,9 +403,10 @@ public class AutomataUI extends javax.swing.JFrame {
             }
         }
         mostrarAutomata();
-        for (int simbolos = 0; simbolos < cantSimbolos; simbolos++){
+        /*for (int simbolos = 0; simbolos < cantSimbolos; simbolos++){
             automata[estado2][simbolos] = "";
-        }
+        }*/
+        eliminarEstado(estado2);
         mostrarAutomata();
     }
     public void mostrarAutomata(){
@@ -414,6 +418,45 @@ public class AutomataUI extends javax.swing.JFrame {
                 System.out.print(automata[estados][simbolos]);
             }
             System.out.println("");
+        }
+    }
+    public void estadosMuertos(){
+        Stack q = new Stack();
+        q.push(automata[0][0]);
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        boolean[] agregados = new boolean[cantEstados];
+        for (int i = 0 ; i<agregados.length; i++){
+            agregados[i] = false;
+        }
+        String[] estadosAutomata = data;
+        agregados[0]=true;
+        while(!q.isEmpty()){
+            String estadoActual = (String)q.pop();
+            for ( int estados = 0; estados < cantEstados; estados ++){
+                if(automata[estados][0].equals(estadoActual)){
+                    for( int simbolos = 0 ; simbolos <cantSimbolos; simbolos++){
+                        int pos = buscarPosicion(data,automata[estados][simbolos]);
+                        if(pos != -1){
+                            if(agregados[pos]== false){
+                                q.add(automata[estados][simbolos]);
+                                agregados[pos] = true;
+                            } 
+                        }
+                    }
+                }
+            }
+            for (int i = 0 ; i<agregados.length; i++){
+                if(agregados[i]==false){
+                    eliminarEstado(i);
+                }
+            }
+        }
+        mostrarAutomata();
+    }
+    public void eliminarEstado(int pos){
+        for (int i = 0; i< this.tablaAutomata.getModel().getColumnCount();i++){
+            automata[pos][i]="";
         }
     }
     public static void main(String args[]) {
