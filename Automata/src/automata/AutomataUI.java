@@ -178,6 +178,11 @@ public class AutomataUI extends javax.swing.JFrame {
         textPrueba.setBounds(80, 330, 390, 27);
 
         botonProbar.setText("Probar");
+        botonProbar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonProbarActionPerformed(evt);
+            }
+        });
         jPanel1.add(botonProbar);
         botonProbar.setBounds(500, 330, 59, 29);
 
@@ -239,6 +244,10 @@ public class AutomataUI extends javax.swing.JFrame {
         añadirTransicion();
     }//GEN-LAST:event_botonAñadirTransicionActionPerformed
 
+    private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
+        estadosEquivalentes();
+    }//GEN-LAST:event_botonProbarActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -260,8 +269,21 @@ public class AutomataUI extends javax.swing.JFrame {
     public void añadirTransicionATabla(String simbolo, String estadoOrigen, String estadoDestino){
         int col = buscarPosicion(this.columns,simbolo );
         int filOrigen = buscarPosicion(this.data,estadoOrigen);
-        //System.out.println("Se añadira el simbolo: "+estadoDestino+ " en "+col+", "+filDestino);
-        this.tablaAutomata.getModel().setValueAt(estadoDestino, filOrigen, col);
+        String data = null;
+        try{
+            data =this.tablaAutomata.getModel().getValueAt(filOrigen, col).toString();
+        }catch(Exception e){
+            System.out.println("No hay transicion actualmente en la posicion: "+filOrigen+","+col);
+        }
+//System.out.println("Se añadira el simbolo: "+estadoDestino+ " en "+col+", "+filDestino);
+        if (data== null){
+            this.tablaAutomata.getModel().setValueAt(estadoDestino, filOrigen, col);
+        }
+        else{
+            if(!data.contains(estadoDestino)){
+                this.tablaAutomata.getModel().setValueAt(data+"-"+estadoDestino, filOrigen, col);
+            }
+        }
     }
     //Metodo para encontrar la posicion en la tabla de un estado o simbolo especifico
     public int buscarPosicion(String[] array, String word){
@@ -338,6 +360,60 @@ public class AutomataUI extends javax.swing.JFrame {
                 setData(dataTemp);// se guardan los valores
                 setColumns(columnsTemp); // se guardan los valores
             }
+        }
+    }
+    public void estadosEquivalentes(){
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        String[] estadosAux = new String[cantEstados];
+        for ( int estados = 0; estados <cantEstados; estados ++){
+            estadosAux[estados]=automata[estados][0]+"-";
+            for( int simbolos = 1 ; simbolos <cantSimbolos; simbolos++){
+                estadosAux[estados]+=automata[estados][simbolos];
+            }
+            System.out.println(estadosAux[estados]);
+        }
+        for ( int estados = 0; estados <estadosAux.length; estados++){
+            int simbolosDeEstado = estadosAux[estados].indexOf("-");
+            for (int estados2=0; estados2<estadosAux.length;estados2++){
+                int simbolosDeEstado2 = estadosAux[estados2].indexOf("-");
+                if(estadosAux[estados].substring(simbolosDeEstado).equals(estadosAux[estados2].substring(simbolosDeEstado2))){
+                    if(estados!=estados2){
+                        combinarEstados(estados,estados2);
+                        estadosAux[estados2]="-modificado";
+                    }
+                }
+            }
+        }
+    }
+    public void combinarEstados(int estado1, int estado2){
+        String estadoAEliminar = automata[estado2][0];
+        String estadoCombinado = automata[estado1][0];
+        System.out.println("el estado a eliminar es: "+estadoAEliminar);
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        for ( int estados = 0; estados <cantEstados; estados ++){
+            for( int simbolos = 1 ; simbolos <cantSimbolos; simbolos++){
+                if(automata[estados][simbolos].equals(estadoAEliminar)){
+                    automata[estados][simbolos] = estadoCombinado;
+                }
+            }
+        }
+        mostrarAutomata();
+        for (int simbolos = 0; simbolos < cantSimbolos; simbolos++){
+            automata[estado2][simbolos] = "";
+        }
+        mostrarAutomata();
+    }
+    public void mostrarAutomata(){
+        System.out.println("El automata esta así");
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        for ( int estados = 0; estados <cantEstados; estados ++){
+            for( int simbolos = 0 ; simbolos <cantSimbolos; simbolos++){
+                System.out.print(automata[estados][simbolos]);
+            }
+            System.out.println("");
         }
     }
     public static void main(String args[]) {

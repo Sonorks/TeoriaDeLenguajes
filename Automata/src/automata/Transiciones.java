@@ -75,6 +75,11 @@ public class Transiciones extends javax.swing.JFrame {
         estadoDestinoTransicion.setModel(new javax.swing.DefaultComboBoxModel<>(rows));
 
         finalizarTransicion.setText("Finalizar");
+        finalizarTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                finalizarTransicionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -132,6 +137,10 @@ public class Transiciones extends javax.swing.JFrame {
     private void añadirTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_añadirTransicionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_añadirTransicionActionPerformed
+
+    private void finalizarTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finalizarTransicionActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_finalizarTransicionActionPerformed
 
     /**
      * @param args the command line arguments
