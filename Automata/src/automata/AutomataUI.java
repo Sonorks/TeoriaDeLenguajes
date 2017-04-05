@@ -247,8 +247,9 @@ public class AutomataUI extends javax.swing.JFrame {
     }//GEN-LAST:event_botonAñadirTransicionActionPerformed
 
     private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
-            estadosEquivalentes();
-        estadosMuertos();
+        //estadosEquivalentes();
+        //estadosMuertos();
+        NoDeterministicoADeterministico(); 
     }//GEN-LAST:event_botonProbarActionPerformed
 
     /**
@@ -458,6 +459,119 @@ public class AutomataUI extends javax.swing.JFrame {
         for (int i = 0; i< this.tablaAutomata.getModel().getColumnCount();i++){
             automata[pos][i]="";
         }
+    }
+    public void NoDeterministicoADeterministico(){
+        Stack q = new Stack();
+        int estadosNuevos = 0;
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        q.push(automata[0][0]);
+        String[][] automataDeterministico = new String[cantEstados*10][cantSimbolos];
+        automataDeterministico[0][0]=automata[0][0];
+        String[] nuevosEstados = null;
+        if(esNoDeterministico()){
+            boolean nuevoEstadoDescubierto = true;
+            while(nuevoEstadoDescubierto = true){
+                int estadosNuevosActual = estadosNuevos;
+                nuevoEstadoDescubierto = false;
+                String estado = automataDeterministico[estadosNuevos][0];
+                if(!estado.equals("null")){
+                    String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
+                    for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                        automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
+                    }
+                    for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                        System.out.println(transicionesDeEstadoNuevo[n]);
+                    }
+                }
+                nuevosEstados= buscarNuevosEstados(automataDeterministico,cantEstados,cantSimbolos, estadosNuevos);
+                for (int n = 0; n < nuevosEstados.length; n++){
+                    if(!nuevosEstados.equals("null")){
+                        System.out.println("Estados nuevos: "+nuevosEstados[n]+" en: "+n );
+                    }
+                }
+                for(int i = 0 ; i<nuevosEstados.length; i++){
+                    if(!q.contains(nuevosEstados[i])){
+                            if(!"null".equals(nuevosEstados[i])){
+                            q.push(nuevosEstados[i]);
+                            nuevoEstadoDescubierto = true;
+                            estadosNuevosActual++;
+                            automataDeterministico[estadosNuevosActual][0] = nuevosEstados[i];
+                            System.out.println("Nuevo estado en pila: "+nuevosEstados[i]);
+                        }
+                    }
+                }
+            for (int j = 0; j<3; j++){
+                System.out.print(automataDeterministico[estadosNuevos][j]+" ");
+            }
+                estadosNuevos++;
+            }
+        }
+        
+    }
+    public String[] buscarTransiciones(String estado, int cantEstados, int cantSimbolos){
+        System.out.println("Buscar transiciones para el estado: "+estado);
+        String[] transiciones = new String[cantSimbolos];
+        for( int k = 0 ; k<transiciones.length; k++){
+            transiciones[k]="";
+        }
+        System.out.println("cantidad de estados en nuevo estado: "+estado.length());
+        if(true){
+            for (int i = 0; i< estado.length() ; i++){
+                String estadoND = Character.toString(estado.charAt(i));
+                int pos = buscarPosicion(data,estadoND);
+                System.out.println("posicion de: "+estadoND+ " es: "+pos);
+                for(int j = 0; j<cantSimbolos; j++){
+                    String trans = automata[pos][j];
+                    if(trans.contains("-")){
+                        trans = trans.replace("-", "");
+                    }
+                    if(!transiciones[j].contains(trans)){
+                        transiciones[j] += trans;
+                    }
+                }
+            }
+        }
+        for( int k = 0 ; k<transiciones.length; k++){
+            System.out.println("Transicion:" + transiciones[k] + " en:"+k);
+        }
+        return transiciones;
+    }
+    public String[] buscarNuevosEstados(String[][] automata, int cantEstados, int cantSimbolos, int estadoActual){
+        String[] nuevosEstados = new String[cantSimbolos];
+        for (int i = 0 ; i<nuevosEstados.length; i++){
+            nuevosEstados[i]="null";
+        }
+        int cantEstadosNuevos = 0;
+        nuevosEstados[0] = automata[estadoActual][0];
+        Stack q = new Stack();
+        q.push(automata[estadoActual][0]);
+            for (int j = 0; j < cantSimbolos; j++){
+                if (automata[estadoActual][j].contains("-")){
+                    if(!q.contains(automata[estadoActual][j])){
+                        String nuevoEstado = automata[estadoActual][j].replaceAll("-","");
+                        if(!q.contains(nuevoEstado)){
+                            System.out.println("nuevoEstado: "+nuevoEstado);
+                            q.push(nuevoEstado);
+                            nuevosEstados[cantEstadosNuevos]= nuevoEstado;
+                            cantEstadosNuevos++;
+                        }
+                    }
+                }
+                else if(!automata[estadoActual][j].isEmpty()){
+                    String nuevoEstado = automata[estadoActual][j];
+                    if(!q.contains(nuevoEstado)){
+                            System.out.println("nuevoEstado: "+nuevoEstado);
+                            q.push(nuevoEstado);
+                            nuevosEstados[cantEstadosNuevos]= nuevoEstado;
+                            cantEstadosNuevos++;
+                        }
+                }
+            }      
+        return nuevosEstados;
+    }
+    public boolean esNoDeterministico(){
+        return true;
     }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
