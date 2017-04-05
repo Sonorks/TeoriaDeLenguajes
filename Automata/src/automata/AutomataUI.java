@@ -523,11 +523,17 @@ public class AutomataUI extends javax.swing.JFrame {
                 System.out.println("posicion de: "+estadoND+ " es: "+pos);
                 for(int j = 0; j<cantSimbolos; j++){
                     String trans = automata[pos][j];
+                    System.out.println("Trans es: "+ trans);
                     if(trans.contains("-")){
                         trans = trans.replace("-", "");
                     }
-                    if(!transiciones[j].contains(trans)){
-                        transiciones[j] += trans;
+                    for(int k = 0; k<trans.length(); k++){
+                        String tran = Character.toString(trans.charAt(k));
+                        if(!transiciones[j].contains(tran)){
+                            System.out.println("Transiciones[J] es: "+transiciones[j]);
+                            transiciones[j] += tran;
+                            System.out.println("Transiciones[J] modificada es: "+transiciones[j]);
+                        }
                     }
                 }
             }
