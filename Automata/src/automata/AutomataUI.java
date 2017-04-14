@@ -1,10 +1,12 @@
 package automata;
 
 import java.awt.Point;
+import static java.lang.Integer.parseInt;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
@@ -25,7 +27,8 @@ public class AutomataUI extends javax.swing.JFrame {
     public String[] rows = null; //se usa para actualizar las filas cada que se agrega un estado
     public String[] data = null; //donde se guardan los estados
     public String[][] automata= null; // donde se guarda la tabla en general
-
+    public int[] tipoEstados = null;
+    
     public void prueba(){
         this.textSimbolo.setText("estado enviado del otro lado");
     }
@@ -84,6 +87,10 @@ public class AutomataUI extends javax.swing.JFrame {
         textPrueba = new javax.swing.JTextField();
         botonProbar = new javax.swing.JButton();
         botonAñadirTransicion = new javax.swing.JButton();
+        jLabel3 = new javax.swing.JLabel();
+        typeEstado = new javax.swing.JTextField();
+        eInicial = new javax.swing.JTextField();
+        jLabel5 = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
@@ -148,7 +155,7 @@ public class AutomataUI extends javax.swing.JFrame {
 
         botonCargarArchivo.setText("Cargar desde archivo");
         jPanel1.add(botonCargarArchivo);
-        botonCargarArchivo.setBounds(390, 130, 180, 30);
+        botonCargarArchivo.setBounds(390, 160, 180, 30);
 
         jLabel1.setText("Tabla de Autómata");
         jPanel1.add(jLabel1);
@@ -197,7 +204,25 @@ public class AutomataUI extends javax.swing.JFrame {
             }
         });
         jPanel1.add(botonAñadirTransicion);
-        botonAñadirTransicion.setBounds(390, 180, 180, 29);
+        botonAñadirTransicion.setBounds(390, 200, 180, 29);
+
+        jLabel3.setText("Aceptacion o rechazo");
+        jPanel1.add(jLabel3);
+        jLabel3.setBounds(390, 130, 120, 17);
+
+        typeEstado.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                typeEstadoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(typeEstado);
+        typeEstado.setBounds(520, 120, 50, 27);
+        jPanel1.add(eInicial);
+        eInicial.setBounds(160, 290, 70, 20);
+
+        jLabel5.setText("Estado Inicial:");
+        jPanel1.add(jLabel5);
+        jLabel5.setBounds(30, 290, 120, 17);
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -250,8 +275,21 @@ public class AutomataUI extends javax.swing.JFrame {
     private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
         //estadosEquivalentes();
         //estadosMuertos();
-        NoDeterministicoADeterministico(); 
+        //NoDeterministicoADeterministico(); 
+        boolean test = evaluarCadena(automata, tipoEstados, eInicial.getText(), textPrueba.getText(), columns);
+        if(test = true)
+        {
+            JOptionPane.showMessageDialog(null, "Cadena Valida","Prueba", JOptionPane.INFORMATION_MESSAGE);
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Cadena Valida","Prueba", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_botonProbarActionPerformed
+
+    private void typeEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeEstadoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_typeEstadoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -351,9 +389,11 @@ public class AutomataUI extends javax.swing.JFrame {
         }
     }
     public void addEstado(){
-        if(!this.textEstado.getText().isEmpty()){ //para que no ingrese campos vacios / nulos
+        if(!this.textEstado.getText().isEmpty() && !this.typeEstado.getText().isEmpty()){ //para que no ingrese campos vacios / nulos
             int len = this.tablaAutomata.getColumnCount(); //numero de columnas
             int rowCount = this.tablaAutomata.getRowCount(); //numero de filas
+            int estado = 0;
+            tipoEstados = new int[len+1];
             String[] columnsTemp= new String[len]; //arreglos para almacenar datos antes de agregar nuevos
             String[] rowsTemp = new String[len];
             String[] dataTemp = new String[rowCount+1];
@@ -375,12 +415,20 @@ public class AutomataUI extends javax.swing.JFrame {
                 model.addRow(rowsTemp);  
                 for (int k = 0; k<rowCount; k++){
                         this.tablaAutomata.getModel().setValueAt(dataTemp[k], k, 0);
+                        estado = estado + 1;
                 }
+                tipoEstados[estado] = parseInt(typeEstado.getText());
+                System.out.println("Posición estado   " + estado);
                 this.textEstado.setText("");
+                this.typeEstado.setText(""); 
                 setRows(rowsTemp);// se guardan los valores
                 setData(dataTemp);// se guardan los valores
                 setColumns(columnsTemp); // se guardan los valores
             }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(null, "Debe ingresar el estado y abajo 0 si es de rechazo 1 si es de aceptación","Faltan datos", JOptionPane.ERROR_MESSAGE);
         }
     }
     public void estadosEquivalentes(){
@@ -614,6 +662,70 @@ public class AutomataUI extends javax.swing.JFrame {
         }
         return false;
     }
+    public boolean procesarExprecion(String cadena){
+        
+        
+        
+        
+        
+        return false;   
+    }
+     public boolean evaluarCadena(String[][] matriz, int[] vector, String eInicial, String cadena,String[] simbolo)
+     {
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        String txt = cadena;
+        int i = txt.length();
+        return true;
+     }
+     /*{
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        String txt = cadena;
+        int i = txt.length();
+        /*int j = 0;
+        int k = 0;
+        int l = 0;
+        String s;
+        String estadoActual = eInicial;// Estado Inicial
+        String simboloActual;
+        String estado;
+        while (i != 0) {//Transiciones, aqui se procesa la cadena
+            s = Character.toString(txt.charAt(j));
+            k = 0;
+            estado = matriz[0][0];
+            System.out.println(matriz[0][0]);
+            while (k<cantEstados && !estado.equals(estadoActual)) {// Se busca el estado
+                estado = matriz[k][0];
+                k++;
+            }
+            if(k==cantEstados){
+                k--;
+            }
+            System.out.println("El estado despues de ese while raro es: "+estado);
+            l = 0;
+            simboloActual = simbolo[l];
+            while (!(s.equals(simboloActual))) {// se busca el simbolo de entrada
+                l = l + 1;
+                simboloActual = simbolo[l];
+                
+            }
+            estadoActual = matriz[k][l];//Cambio de estado (Transición)             
+            j++;
+            i--;      
+        }
+        k=0;
+        estado = matriz[0][0];
+        while (k<cantEstados && !estado.equals(estadoActual)) {//Se observa si el estado en el cual quedo es de aceptacion o rechazo. 
+                estado = matriz[k][0];   
+                k++;
+            }
+        System.out.println("El estado final es: "+k);
+        System.out.println(estadoActual);
+
+        if(vector[k]== 1 ){return true;}
+        return false;
+    }*/
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
@@ -653,8 +765,11 @@ public class AutomataUI extends javax.swing.JFrame {
     private javax.swing.JButton botonCargarArchivo;
     private javax.swing.JButton botonIdentificarYConvertir;
     private javax.swing.JButton botonProbar;
+    private javax.swing.JTextField eInicial;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -664,5 +779,6 @@ public class AutomataUI extends javax.swing.JFrame {
     private javax.swing.JTextField textEstado;
     private javax.swing.JTextField textPrueba;
     private javax.swing.JTextField textSimbolo;
+    private javax.swing.JTextField typeEstado;
     // End of variables declaration//GEN-END:variables
 }
