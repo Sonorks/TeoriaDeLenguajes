@@ -44,6 +44,7 @@
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
                           <Component id="añadirTransicion" pref="181" max="32767" attributes="0"/>
                           <Component id="finalizarTransicion" max="32767" attributes="0"/>
+                          <Component id="botonModificarTransicion" max="32767" attributes="0"/>
                       </Group>
                   </Group>
               </Group>
@@ -69,11 +70,13 @@
                   <Component id="jLabel3" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="estadoDestinoTransicion" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace min="-2" pref="36" max="-2" attributes="0"/>
-              <Component id="añadirTransicion" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="separate" max="-2" attributes="0"/>
+              <Component id="añadirTransicion" min="-2" max="-2" attributes="0"/>
+              <EmptySpace pref="11" max="32767" attributes="0"/>
+              <Component id="botonModificarTransicion" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="finalizarTransicion" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="22" max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -150,6 +153,17 @@
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="finalizarTransicionActionPerformed"/>
       </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="botonModificarTransicion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Modificar Transicion"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="botonModificarTransicionActionPerformed"/>
+      </Events>
+      <AuxValues>
+        <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
+      </AuxValues>
     </Component>
   </SubComponents>
 </Form>

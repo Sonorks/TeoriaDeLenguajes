@@ -1,6 +1,7 @@
 package automata;
 
 import java.awt.Point;
+import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
@@ -267,7 +268,12 @@ public class AutomataUI extends javax.swing.JFrame {
             public void actionPerformed(java.awt.event.ActionEvent evt) { //controlar click en el boton
                añadirTransicionATabla(transicionesUI.simboloTransicion.getSelectedItem().toString(),transicionesUI.estadoOrigenTransicion.getSelectedItem().toString(),transicionesUI.estadoDestinoTransicion.getSelectedItem().toString());
             }
-        });   
+        }); 
+        transicionesUI.botonModificarTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) { //controlar click en el boton
+               modificarTransicionATabla(transicionesUI.simboloTransicion.getSelectedItem().toString(),transicionesUI.estadoOrigenTransicion.getSelectedItem().toString(),transicionesUI.estadoDestinoTransicion.getSelectedItem().toString());
+            }
+        });
     }
     //metodo para añadir la transicion a la JTable
     public void añadirTransicionATabla(String simbolo, String estadoOrigen, String estadoDestino){
@@ -288,6 +294,17 @@ public class AutomataUI extends javax.swing.JFrame {
                 this.tablaAutomata.getModel().setValueAt(data+"-"+estadoDestino, filOrigen, col);
             }
         }
+    }
+    public void modificarTransicionATabla(String simbolo, String estadoOrigen, String estadoDestino){
+        int col = buscarPosicion(this.columns,simbolo );
+        int filOrigen = buscarPosicion(this.data,estadoOrigen);
+        String data = null;
+        try{
+            data =this.tablaAutomata.getModel().getValueAt(filOrigen, col).toString();
+        }catch(Exception e){
+            System.out.println("No hay transicion actualmente en la posicion: "+filOrigen+","+col);
+        }
+            this.tablaAutomata.getModel().setValueAt(estadoDestino, filOrigen, col);
     }
     //Metodo para encontrar la posicion en la tabla de un estado o simbolo especifico
     public int buscarPosicion(String[] array, String word){
@@ -474,16 +491,17 @@ public class AutomataUI extends javax.swing.JFrame {
             while(nuevoEstadoDescubierto = true){
                 int estadosNuevosActual = estadosNuevos;
                 nuevoEstadoDescubierto = false;
-                String estado = automataDeterministico[estadosNuevos][0];
-                if(!estado.equals("null")){
-                    String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
-                    for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
-                        automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
+                String estado = automataDeterministico[estadosNuevos][0];//colocar un try catch para el null
+                    if(!"null".equals(estado)){ //aqui sale un nullPointerException que no afecta el programa
+                        String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
+                        for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                            automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
+                        }
+                        for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                            System.out.println(transicionesDeEstadoNuevo[n]);
+                        }
                     }
-                    for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
-                        System.out.println(transicionesDeEstadoNuevo[n]);
-                    }
-                }
+                
                 nuevosEstados= buscarNuevosEstados(automataDeterministico,cantEstados,cantSimbolos, estadosNuevos);
                 for (int n = 0; n < nuevosEstados.length; n++){
                     if(!nuevosEstados.equals("null")){
@@ -491,7 +509,7 @@ public class AutomataUI extends javax.swing.JFrame {
                     }
                 }
                 for(int i = 0 ; i<nuevosEstados.length; i++){
-                    if(!q.contains(nuevosEstados[i])){
+                    if(!estadosIguales(q,nuevosEstados[i])){
                             if(!"null".equals(nuevosEstados[i])){
                             q.push(nuevosEstados[i]);
                             nuevoEstadoDescubierto = true;
@@ -515,31 +533,31 @@ public class AutomataUI extends javax.swing.JFrame {
         for( int k = 0 ; k<transiciones.length; k++){
             transiciones[k]="";
         }
-        System.out.println("cantidad de estados en nuevo estado: "+estado.length());
+        //System.out.println("cantidad de estados en nuevo estado: "+estado.length());
         if(true){
             for (int i = 0; i< estado.length() ; i++){
                 String estadoND = Character.toString(estado.charAt(i));
                 int pos = buscarPosicion(data,estadoND);
-                System.out.println("posicion de: "+estadoND+ " es: "+pos);
+                //System.out.println("posicion de: "+estadoND+ " es: "+pos);
                 for(int j = 0; j<cantSimbolos; j++){
                     String trans = automata[pos][j];
-                    System.out.println("Trans es: "+ trans);
+                    //System.out.println("Trans es: "+ trans);
                     if(trans.contains("-")){
                         trans = trans.replace("-", "");
                     }
                     for(int k = 0; k<trans.length(); k++){
                         String tran = Character.toString(trans.charAt(k));
                         if(!transiciones[j].contains(tran)){
-                            System.out.println("Transiciones[J] es: "+transiciones[j]);
+                            //System.out.println("Transiciones[J] es: "+transiciones[j]);
                             transiciones[j] += tran;
-                            System.out.println("Transiciones[J] modificada es: "+transiciones[j]);
+                            //System.out.println("Transiciones[J] modificada es: "+transiciones[j]);
                         }
                     }
                 }
             }
         }
         for( int k = 0 ; k<transiciones.length; k++){
-            System.out.println("Transicion:" + transiciones[k] + " en:"+k);
+            //System.out.println("Transicion:" + transiciones[k] + " en:"+k);
         }
         return transiciones;
     }
@@ -556,7 +574,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 if (automata[estadoActual][j].contains("-")){
                     if(!q.contains(automata[estadoActual][j])){
                         String nuevoEstado = automata[estadoActual][j].replaceAll("-","");
-                        if(!q.contains(nuevoEstado)){
+                        if(!estadosIguales(q,nuevoEstado)){
                             System.out.println("nuevoEstado: "+nuevoEstado);
                             q.push(nuevoEstado);
                             nuevosEstados[cantEstadosNuevos]= nuevoEstado;
@@ -566,7 +584,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 }
                 else if(!automata[estadoActual][j].isEmpty()){
                     String nuevoEstado = automata[estadoActual][j];
-                    if(!q.contains(nuevoEstado)){
+                    if(!estadosIguales(q,nuevoEstado)){
                             System.out.println("nuevoEstado: "+nuevoEstado);
                             q.push(nuevoEstado);
                             nuevosEstados[cantEstadosNuevos]= nuevoEstado;
@@ -578,6 +596,23 @@ public class AutomataUI extends javax.swing.JFrame {
     }
     public boolean esNoDeterministico(){
         return true;
+    }
+    public boolean estadosIguales(Stack s, String estado){
+        Stack pilaEstados = s;
+        System.out.println(s.size());
+        char[] estadoNuevo = estado.toCharArray();
+        Arrays.sort(estadoNuevo);
+        char[] estadoPila;
+        for (int i = 0 ; i < s.size(); i++){
+            System.out.println("Buscando estados iguales en la pila");
+            estadoPila = s.elementAt(i).toString().toCharArray();
+            Arrays.sort(estadoPila);
+            if(Arrays.equals(estadoNuevo,estadoPila)){
+                System.out.println("Son estados iguales: "+estadoPila+" - "+estadoNuevo);
+                return true;
+            }
+        }
+        return false;
     }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */

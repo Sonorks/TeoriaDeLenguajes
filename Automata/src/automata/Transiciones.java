@@ -47,6 +47,7 @@ public class Transiciones extends javax.swing.JFrame {
         estadoOrigenTransicion = new javax.swing.JComboBox<>();
         estadoDestinoTransicion = new javax.swing.JComboBox<>();
         finalizarTransicion = new javax.swing.JButton();
+        botonModificarTransicion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -81,6 +82,13 @@ public class Transiciones extends javax.swing.JFrame {
             }
         });
 
+        botonModificarTransicion.setText("Modificar Transicion");
+        botonModificarTransicion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonModificarTransicionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -102,7 +110,8 @@ public class Transiciones extends javax.swing.JFrame {
                         .addGap(106, 106, 106)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(añadirTransicion, javax.swing.GroupLayout.DEFAULT_SIZE, 181, Short.MAX_VALUE)
-                            .addComponent(finalizarTransicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(finalizarTransicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(botonModificarTransicion, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap(47, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -120,11 +129,13 @@ public class Transiciones extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3)
                     .addComponent(estadoDestinoTransicion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(36, 36, 36)
-                .addComponent(añadirTransicion)
                 .addGap(18, 18, 18)
+                .addComponent(añadirTransicion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 11, Short.MAX_VALUE)
+                .addComponent(botonModificarTransicion)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(finalizarTransicion)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap())
         );
 
         pack();
@@ -141,6 +152,10 @@ public class Transiciones extends javax.swing.JFrame {
     private void finalizarTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_finalizarTransicionActionPerformed
         this.dispose();
     }//GEN-LAST:event_finalizarTransicionActionPerformed
+
+    private void botonModificarTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonModificarTransicionActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_botonModificarTransicionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -179,6 +194,7 @@ public class Transiciones extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JButton añadirTransicion;
+    public javax.swing.JButton botonModificarTransicion;
     public javax.swing.JComboBox<String> estadoDestinoTransicion;
     public javax.swing.JComboBox<String> estadoOrigenTransicion;
     private javax.swing.JButton finalizarTransicion;
