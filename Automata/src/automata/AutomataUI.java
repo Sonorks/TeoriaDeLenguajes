@@ -1,11 +1,17 @@
 package automata;
 
 import java.awt.Point;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import static java.lang.Integer.parseInt;
 import java.util.Arrays;
 import java.util.Queue;
 import java.util.Stack;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -28,7 +34,7 @@ public class AutomataUI extends javax.swing.JFrame {
     public String[] data = null; //donde se guardan los estados
     public String[][] automata= null; // donde se guarda la tabla en general
     public int[] tipoEstados = null;
-    
+    public String[][] automataFinal= null;
     public void prueba(){
         this.textSimbolo.setText("estado enviado del otro lado");
     }
@@ -154,6 +160,11 @@ public class AutomataUI extends javax.swing.JFrame {
         botonAddEstado.setBounds(390, 80, 120, 30);
 
         botonCargarArchivo.setText("Cargar desde archivo");
+        botonCargarArchivo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                botonCargarArchivoActionPerformed(evt);
+            }
+        });
         jPanel1.add(botonCargarArchivo);
         botonCargarArchivo.setBounds(390, 160, 180, 30);
 
@@ -249,7 +260,7 @@ public class AutomataUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void botonIdentificarYConvertirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonIdentificarYConvertirActionPerformed
-        // TODO add your handling code here:
+        //NoDeterministicoADeterministico(); 
     }//GEN-LAST:event_botonIdentificarYConvertirActionPerformed
 
     private void textPruebaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_textPruebaActionPerformed
@@ -266,6 +277,7 @@ public class AutomataUI extends javax.swing.JFrame {
 
     private void botonIdentificarYConvertirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonIdentificarYConvertirMouseClicked
         llenarAutomata();
+        NoDeterministicoADeterministico(); 
     }//GEN-LAST:event_botonIdentificarYConvertirMouseClicked
 
     private void botonAñadirTransicionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonAñadirTransicionActionPerformed
@@ -275,7 +287,7 @@ public class AutomataUI extends javax.swing.JFrame {
     private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
         //estadosEquivalentes();
         //estadosMuertos();
-        //NoDeterministicoADeterministico(); 
+        //
         boolean test = evaluarCadena(automata, tipoEstados, eInicial.getText(), textPrueba.getText(), columns);
         if(test = true)
         {
@@ -290,6 +302,14 @@ public class AutomataUI extends javax.swing.JFrame {
     private void typeEstadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeEstadoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_typeEstadoActionPerformed
+
+    private void botonCargarArchivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonCargarArchivoActionPerformed
+        try {
+            guardarEnArchivo();// TODO add your handling code here:
+        } catch (IOException ex) {
+            Logger.getLogger(AutomataUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_botonCargarArchivoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -536,21 +556,25 @@ public class AutomataUI extends javax.swing.JFrame {
         String[] nuevosEstados = null;
         if(esNoDeterministico()){
             boolean nuevoEstadoDescubierto = true;
-            while(nuevoEstadoDescubierto = true){
+            while(nuevoEstadoDescubierto == true){ // de este while no sale, se queda con nulls
                 int estadosNuevosActual = estadosNuevos;
                 nuevoEstadoDescubierto = false;
                 String estado = automataDeterministico[estadosNuevos][0];//colocar un try catch para el null
-                    if(!"null".equals(estado)){ //aqui sale un nullPointerException que no afecta el programa
+                    if(!("null".equals(estado)) || estado != null){ //aqui sale un nullPointerException que no afecta el programa
                         String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
-                        for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
-                            automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
-                        }
-                        for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
-                            System.out.println(transicionesDeEstadoNuevo[n]);
-                        }
+                        if (transicionesDeEstadoNuevo != null){
+                            for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                                automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
+                            }
+                            for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                                System.out.println(transicionesDeEstadoNuevo[n]);
+                            }
+                        }//else { nuevoEstadoDescubierto = false;}
                     }
+                    
                 
                 nuevosEstados= buscarNuevosEstados(automataDeterministico,cantEstados,cantSimbolos, estadosNuevos);
+                if (nuevosEstados != null){
                 for (int n = 0; n < nuevosEstados.length; n++){
                     if(!nuevosEstados.equals("null")){
                         System.out.println("Estados nuevos: "+nuevosEstados[n]+" en: "+n );
@@ -558,7 +582,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 }
                 for(int i = 0 ; i<nuevosEstados.length; i++){
                     if(!estadosIguales(q,nuevosEstados[i])){
-                            if(!"null".equals(nuevosEstados[i])){
+                            if(!"null".equals(nuevosEstados[i]) || nuevosEstados[i] != null){
                             q.push(nuevosEstados[i]);
                             nuevoEstadoDescubierto = true;
                             estadosNuevosActual++;
@@ -572,53 +596,71 @@ public class AutomataUI extends javax.swing.JFrame {
             }
                 estadosNuevos++;
             }
+                //else{ nuevoEstadoDescubierto = false;}
+            }
         }
+        automataFinal = automataDeterministico;
         
     }
     public String[] buscarTransiciones(String estado, int cantEstados, int cantSimbolos){
-        System.out.println("Buscar transiciones para el estado: "+estado);
         String[] transiciones = new String[cantSimbolos];
         for( int k = 0 ; k<transiciones.length; k++){
             transiciones[k]="";
         }
+        if ("null".equals(estado) || estado == null){
+            return null;
+        }
+        System.out.println("Buscar transiciones para el estado: "+estado);
+        //String[] transiciones = new String[cantSimbolos];
         //System.out.println("cantidad de estados en nuevo estado: "+estado.length());
-        if(true){
-            for (int i = 0; i< estado.length() ; i++){
-                String estadoND = Character.toString(estado.charAt(i));
-                int pos = buscarPosicion(data,estadoND);
-                //System.out.println("posicion de: "+estadoND+ " es: "+pos);
-                for(int j = 0; j<cantSimbolos; j++){
-                    String trans = automata[pos][j];
-                    //System.out.println("Trans es: "+ trans);
-                    if(trans.contains("-")){
-                        trans = trans.replace("-", "");
-                    }
-                    for(int k = 0; k<trans.length(); k++){
-                        String tran = Character.toString(trans.charAt(k));
-                        if(!transiciones[j].contains(tran)){
-                            //System.out.println("Transiciones[J] es: "+transiciones[j]);
-                            transiciones[j] += tran;
-                            //System.out.println("Transiciones[J] modificada es: "+transiciones[j]);
+        try{
+            if(true){
+                for (int i = 0; i< estado.length() ; i++){
+                    String estadoND = Character.toString(estado.charAt(i));
+                    int pos = buscarPosicion(data,estadoND);
+                    //System.out.println("posicion de: "+estadoND+ " es: "+pos);
+                    for(int j = 0; j<cantSimbolos; j++){
+                        String trans = automata[pos][j];
+                        //System.out.println("Trans es: "+ trans);
+                        if(trans.contains("-")){
+                            trans = trans.replace("-", "");
+                        }
+                        for(int k = 0; k<trans.length(); k++){
+                            String tran = Character.toString(trans.charAt(k));
+                            if(!transiciones[j].contains(tran)){
+                                //System.out.println("Transiciones[J] es: "+transiciones[j]);
+                                transiciones[j] += tran;
+                                //System.out.println("Transiciones[J] modificada es: "+transiciones[j]);
+                            }
                         }
                     }
                 }
             }
+                    
+        }
+        catch(Exception e){
+            System.out.println("Estado null");
+            return null;
         }
         for( int k = 0 ; k<transiciones.length; k++){
             //System.out.println("Transicion:" + transiciones[k] + " en:"+k);
         }
         return transiciones;
     }
+    
     public String[] buscarNuevosEstados(String[][] automata, int cantEstados, int cantSimbolos, int estadoActual){
         String[] nuevosEstados = new String[cantSimbolos];
         for (int i = 0 ; i<nuevosEstados.length; i++){
-            nuevosEstados[i]="null";
+            nuevosEstados[i]=null;
         }
         int cantEstadosNuevos = 0;
+        if(automata[estadoActual][0] != null){
         nuevosEstados[0] = automata[estadoActual][0];
         Stack q = new Stack();
+        
         q.push(automata[estadoActual][0]);
             for (int j = 0; j < cantSimbolos; j++){
+                try{
                 if (automata[estadoActual][j].contains("-")){
                     if(!q.contains(automata[estadoActual][j])){
                         String nuevoEstado = automata[estadoActual][j].replaceAll("-","");
@@ -639,7 +681,13 @@ public class AutomataUI extends javax.swing.JFrame {
                             cantEstadosNuevos++;
                         }
                 }
-            }      
+            }catch(Exception e){
+                j=cantSimbolos;
+                System.out.println("Null salvaje aparece");
+                return null;
+            }
+        }
+        }
         return nuevosEstados;
     }
     public boolean esNoDeterministico(){
@@ -648,6 +696,7 @@ public class AutomataUI extends javax.swing.JFrame {
     public boolean estadosIguales(Stack s, String estado){
         Stack pilaEstados = s;
         System.out.println(s.size());
+        if(estado != null){
         char[] estadoNuevo = estado.toCharArray();
         Arrays.sort(estadoNuevo);
         char[] estadoPila;
@@ -659,6 +708,7 @@ public class AutomataUI extends javax.swing.JFrame {
                 System.out.println("Son estados iguales: "+estadoPila+" - "+estadoNuevo);
                 return true;
             }
+        }
         }
         return false;
     }
@@ -726,6 +776,33 @@ public class AutomataUI extends javax.swing.JFrame {
         if(vector[k]== 1 ){return true;}
         return false;
     }*/
+     
+    public void guardarEnArchivo() throws IOException{
+        int cantEstados = this.tablaAutomata.getModel().getRowCount();
+        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+        FileWriter archivo = null;
+        PrintWriter pw = null;
+        try{
+            archivo = new FileWriter("automata.txt");
+            pw = new PrintWriter(archivo);
+            pw.println("último automata guardado");
+            for(int i = 0 ; i < cantEstados; i++){
+                for (int j = 0 ; j< cantSimbolos; j++){
+                    pw.print(automataFinal[i][j]+" ");
+                }
+                pw.println(" ");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }finally{
+            try{
+                if (null != archivo) archivo.close();
+            }catch (Exception e2){
+                e2.printStackTrace();
+            }
+        }
+        
+    }
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
