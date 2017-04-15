@@ -1,1 +1,6 @@
 último automata guardado
+a ab b  
+ab abc ba  
+b c a  
+abc abc ba  
+c c a  

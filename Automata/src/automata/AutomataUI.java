@@ -35,6 +35,7 @@ public class AutomataUI extends javax.swing.JFrame {
     public String[][] automata= null; // donde se guarda la tabla en general
     public int[] tipoEstados = null;
     public String[][] automataFinal= null;
+    public int estadosAutomataFinal = 0;
     public void prueba(){
         this.textSimbolo.setText("estado enviado del otro lado");
     }
@@ -277,6 +278,8 @@ public class AutomataUI extends javax.swing.JFrame {
 
     private void botonIdentificarYConvertirMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_botonIdentificarYConvertirMouseClicked
         llenarAutomata();
+        estadosEquivalentes();
+        estadosMuertos();
         NoDeterministicoADeterministico(); 
     }//GEN-LAST:event_botonIdentificarYConvertirMouseClicked
 
@@ -285,17 +288,16 @@ public class AutomataUI extends javax.swing.JFrame {
     }//GEN-LAST:event_botonAñadirTransicionActionPerformed
 
     private void botonProbarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_botonProbarActionPerformed
-        //estadosEquivalentes();
-        //estadosMuertos();
+        
         //
-        boolean test = evaluarCadena(automata, tipoEstados, eInicial.getText(), textPrueba.getText(), columns);
-        if(test = true)
+        boolean test = evaluarCadena(automataFinal, tipoEstados, eInicial.getText(), textPrueba.getText(), columns);
+        if(test == true)
         {
             JOptionPane.showMessageDialog(null, "Cadena Valida","Prueba", JOptionPane.INFORMATION_MESSAGE);
         }
         else
         {
-            JOptionPane.showMessageDialog(null, "Cadena Valida","Prueba", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Cadena invalida","Prueba", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_botonProbarActionPerformed
 
@@ -413,7 +415,10 @@ public class AutomataUI extends javax.swing.JFrame {
             int len = this.tablaAutomata.getColumnCount(); //numero de columnas
             int rowCount = this.tablaAutomata.getRowCount(); //numero de filas
             int estado = 0;
-            tipoEstados = new int[len+1];
+            if(tipoEstados == null)// Para no reiniciar el vector
+            {
+                tipoEstados = new int[len+1];
+            }
             String[] columnsTemp= new String[len]; //arreglos para almacenar datos antes de agregar nuevos
             String[] rowsTemp = new String[len];
             String[] dataTemp = new String[rowCount+1];
@@ -554,13 +559,15 @@ public class AutomataUI extends javax.swing.JFrame {
         String[][] automataDeterministico = new String[cantEstados*10][cantSimbolos];
         automataDeterministico[0][0]=automata[0][0];
         String[] nuevosEstados = null;
+        int estadosNuevosActual = estadosNuevos;
         if(esNoDeterministico()){
             boolean nuevoEstadoDescubierto = true;
-            while(nuevoEstadoDescubierto == true){ // de este while no sale, se queda con nulls
-                int estadosNuevosActual = estadosNuevos;
+            do{
+               
                 nuevoEstadoDescubierto = false;
+                System.out.println("estadosNuevos: "+estadosNuevos);
                 String estado = automataDeterministico[estadosNuevos][0];//colocar un try catch para el null
-                    if(!("null".equals(estado)) || estado != null){ //aqui sale un nullPointerException que no afecta el programa
+                    if(!("null".equals(estado)) && estado != null){ //aqui sale un nullPointerException que no afecta el programa
                         String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
                         if (transicionesDeEstadoNuevo != null){
                             for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
@@ -574,32 +581,90 @@ public class AutomataUI extends javax.swing.JFrame {
                     
                 
                 nuevosEstados= buscarNuevosEstados(automataDeterministico,cantEstados,cantSimbolos, estadosNuevos);
-                if (nuevosEstados != null){
+                try{
+                if (nuevosEstados[0] != null){
+                    System.out.println(nuevosEstados[0]);
                 for (int n = 0; n < nuevosEstados.length; n++){
-                    if(!nuevosEstados.equals("null")){
+                    if(nuevosEstados[n] != null){
                         System.out.println("Estados nuevos: "+nuevosEstados[n]+" en: "+n );
                     }
                 }
                 for(int i = 0 ; i<nuevosEstados.length; i++){
                     if(!estadosIguales(q,nuevosEstados[i])){
-                            if(!"null".equals(nuevosEstados[i]) || nuevosEstados[i] != null){
+                            //System.out.println("El nuevoEstados[i] es: "+nuevosEstados[i]);
+                            if(!"null".equals(nuevosEstados[i]) && !nuevosEstados[i].equals(" ")){
+                            q.push(nuevosEstados[i]);
+                            nuevoEstadoDescubierto = true;
+                            estadosNuevosActual++;
+                            System.out.println("El estadosNuevosActual va en: "+estadosNuevosActual);
+                            automataDeterministico[estadosNuevosActual][0] = nuevosEstados[i];
+                            System.out.println("Nuevo estado en pila: "+nuevosEstados[i]);
+                            
+                        }
+                    }
+                }
+                          
+            }
+                }catch(Exception e){
+                    System.out.println("Nuevo estado null");
+                }
+                //else{ nuevoEstadoDescubierto = false;}
+                estadosNuevos++;
+                
+            }while(nuevoEstadoDescubierto == true);
+            
+                nuevoEstadoDescubierto = false;
+                System.out.println("estadosNuevos: "+estadosNuevos);
+                String estado = automataDeterministico[estadosNuevos][0];//colocar un try catch para el null
+                    if(!("null".equals(estado)) && estado != null){ //aqui sale un nullPointerException que no afecta el programa
+                        String[] transicionesDeEstadoNuevo = buscarTransiciones(estado,cantEstados,cantSimbolos);
+                        if (transicionesDeEstadoNuevo != null){
+                            for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                                automataDeterministico[estadosNuevos][n] = transicionesDeEstadoNuevo[n];
+                            }
+                            for (int n = 0; n < transicionesDeEstadoNuevo.length; n++){
+                                System.out.println(transicionesDeEstadoNuevo[n]);
+                            }
+                        }//else { nuevoEstadoDescubierto = false;}
+                    }
+                    
+                
+                nuevosEstados= buscarNuevosEstados(automataDeterministico,cantEstados,cantSimbolos, estadosNuevos);
+                try{
+                if (nuevosEstados[0] != null){
+                    System.out.println(nuevosEstados[0]);
+                for (int n = 0; n < nuevosEstados.length; n++){
+                    if(nuevosEstados[n] != null){
+                        System.out.println("Estados nuevos: "+nuevosEstados[n]+" en: "+n );
+                    }
+                }
+                for(int i = 0 ; i<nuevosEstados.length; i++){
+                    if(!estadosIguales(q,nuevosEstados[i])){
+                            System.out.println("El nuevoEstados[i] es: "+nuevosEstados[i]);
+                            if(!"null".equals(nuevosEstados[i]) && !nuevosEstados[i].equals(" ")){
                             q.push(nuevosEstados[i]);
                             nuevoEstadoDescubierto = true;
                             estadosNuevosActual++;
                             automataDeterministico[estadosNuevosActual][0] = nuevosEstados[i];
                             System.out.println("Nuevo estado en pila: "+nuevosEstados[i]);
+                            
                         }
                     }
                 }
-            for (int j = 0; j<3; j++){
-                System.out.print(automataDeterministico[estadosNuevos][j]+" ");
+                          
             }
-                estadosNuevos++;
-            }
-                //else{ nuevoEstadoDescubierto = false;}
-            }
+                }catch(Exception e){
+                    System.out.println("Nuevo estado null");
+                }
         }
         automataFinal = automataDeterministico;
+        estadosAutomataFinal = estadosNuevosActual+1;
+        for (int i = 0 ; i < estadosAutomataFinal; i++){
+            for (int j = 0 ; j < cantSimbolos; j++){
+                System.out.print(automataFinal[i][j]);
+            }
+            System.out.println("");
+        }
         
     }
     public String[] buscarTransiciones(String estado, int cantEstados, int cantSimbolos){
@@ -636,7 +701,7 @@ public class AutomataUI extends javax.swing.JFrame {
                     }
                 }
             }
-                    
+            System.out.println("Hubieron transiciones");        
         }
         catch(Exception e){
             System.out.println("Estado null");
@@ -645,6 +710,7 @@ public class AutomataUI extends javax.swing.JFrame {
         for( int k = 0 ; k<transiciones.length; k++){
             //System.out.println("Transicion:" + transiciones[k] + " en:"+k);
         }
+        //System.out.println("Voy a retornar transiciones");
         return transiciones;
     }
     
@@ -661,7 +727,7 @@ public class AutomataUI extends javax.swing.JFrame {
         q.push(automata[estadoActual][0]);
             for (int j = 0; j < cantSimbolos; j++){
                 try{
-                if (automata[estadoActual][j].contains("-")){
+                if (automata[estadoActual][j].contains("-") && automata[estadoActual][j] != null){
                     if(!q.contains(automata[estadoActual][j])){
                         String nuevoEstado = automata[estadoActual][j].replaceAll("-","");
                         if(!estadosIguales(q,nuevoEstado)){
@@ -672,7 +738,7 @@ public class AutomataUI extends javax.swing.JFrame {
                         }
                     }
                 }
-                else if(!automata[estadoActual][j].isEmpty()){
+                else if(!automata[estadoActual][j].isEmpty() && automata[estadoActual][j] != null){
                     String nuevoEstado = automata[estadoActual][j];
                     if(!estadosIguales(q,nuevoEstado)){
                             System.out.println("nuevoEstado: "+nuevoEstado);
@@ -701,11 +767,11 @@ public class AutomataUI extends javax.swing.JFrame {
         Arrays.sort(estadoNuevo);
         char[] estadoPila;
         for (int i = 0 ; i < s.size(); i++){
-            System.out.println("Buscando estados iguales en la pila");
+            //System.out.println("Buscando estados iguales en la pila");
             estadoPila = s.elementAt(i).toString().toCharArray();
             Arrays.sort(estadoPila);
             if(Arrays.equals(estadoNuevo,estadoPila)){
-                System.out.println("Son estados iguales: "+estadoPila+" - "+estadoNuevo);
+                System.out.println("Son estados iguales: "+estadoPila.toString()+" - "+estadoNuevo.toString());
                 return true;
             }
         }
@@ -720,62 +786,48 @@ public class AutomataUI extends javax.swing.JFrame {
         
         return false;   
     }
-     public boolean evaluarCadena(String[][] matriz, int[] vector, String eInicial, String cadena,String[] simbolo)
-     {
-        int cantEstados = this.tablaAutomata.getModel().getRowCount();
-        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
+     
+     public boolean evaluarCadena(String[][] matriz, int[] vector, String eInicial, String cadena, String[] simbolo) {
         String txt = cadena;
         int i = txt.length();
-        return true;
-     }
-     /*{
-        int cantEstados = this.tablaAutomata.getModel().getRowCount();
-        int cantSimbolos = this.tablaAutomata.getModel().getColumnCount();
-        String txt = cadena;
-        int i = txt.length();
-        /*int j = 0;
+        int j = 0;
         int k = 0;
         int l = 0;
         String s;
         String estadoActual = eInicial;// Estado Inicial
         String simboloActual;
-        String estado;
+        String estado = "";
         while (i != 0) {//Transiciones, aqui se procesa la cadena
             s = Character.toString(txt.charAt(j));
             k = 0;
             estado = matriz[0][0];
-            System.out.println(matriz[0][0]);
-            while (k<cantEstados && !estado.equals(estadoActual)) {// Se busca el estado
-                estado = matriz[k][0];
+            while (!estado.equals(estadoActual)) {// Se busca el estado
                 k++;
+                estado = matriz[k][0];
+                
             }
-            if(k==cantEstados){
-                k--;
-            }
-            System.out.println("El estado despues de ese while raro es: "+estado);
             l = 0;
             simboloActual = simbolo[l];
             while (!(s.equals(simboloActual))) {// se busca el simbolo de entrada
                 l = l + 1;
                 simboloActual = simbolo[l];
-                
             }
             estadoActual = matriz[k][l];//Cambio de estado (Transición)             
             j++;
-            i--;      
+            i--;
         }
-        k=0;
+        k = 0;
         estado = matriz[0][0];
-        while (k<cantEstados && !estado.equals(estadoActual)) {//Se observa si el estado en el cual quedo es de aceptacion o rechazo. 
-                estado = matriz[k][0];   
-                k++;
-            }
-        System.out.println("El estado final es: "+k);
-        System.out.println(estadoActual);
-
-        if(vector[k]== 1 ){return true;}
+        while (!estado.equals(estadoActual)) {//Se observa si el estado en el cual quedo es de aceptacion o rechazo. 
+            k++;
+            estado = matriz[k][0];
+            
+        }
+        if (vector[k] == 1) {
+            return true;
+        }
         return false;
-    }*/
+    }
      
     public void guardarEnArchivo() throws IOException{
         int cantEstados = this.tablaAutomata.getModel().getRowCount();
@@ -786,7 +838,7 @@ public class AutomataUI extends javax.swing.JFrame {
             archivo = new FileWriter("automata.txt");
             pw = new PrintWriter(archivo);
             pw.println("último automata guardado");
-            for(int i = 0 ; i < cantEstados; i++){
+            for(int i = 0 ; i < estadosAutomataFinal; i++){
                 for (int j = 0 ; j< cantSimbolos; j++){
                     pw.print(automataFinal[i][j]+" ");
                 }
